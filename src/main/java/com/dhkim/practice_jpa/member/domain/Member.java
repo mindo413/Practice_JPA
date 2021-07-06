@@ -1,28 +1,40 @@
 package com.dhkim.practice_jpa.member.domain;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 
 @Data
 @NoArgsConstructor()
 @Entity(name="sample_member")
+@ApiModel(description = "회원 모델")
 public class Member {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // 자동 증가 ID
+    @ApiModelProperty(value = "회원 번호")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="memberNo")
-    private Long memberNo;     // 회원 번호
+    private Long memberNo;
 
+    @ApiModelProperty(value = "회원 아이디")
     @Column(name="memberId")
-    private String memberId;   // 회원 아이디
+    private String memberId;
 
+    @ApiModelProperty(value = "회원 명")
     @Column(name="memberName")
-    private String memberName; // 회원명
+    private String memberName;
+    @ApiModelProperty(value = "등록 일자")
+    @CreationTimestamp
+    @Column(name="regDate")
+    private Timestamp regDate;
 
-    @Builder
-    public Member(String memberId, String memberName){
-        this.memberId = memberId;
-        this.memberName = memberName;
-    }
+    @ApiModelProperty(value = "수정 일자")
+    @UpdateTimestamp
+    @Column(name="updDate")
+    private Timestamp updDate;
 
 }
