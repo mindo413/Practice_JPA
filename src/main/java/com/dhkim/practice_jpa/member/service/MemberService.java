@@ -5,8 +5,6 @@ import com.dhkim.practice_jpa.common.domain.APIResponseMsg;
 import com.dhkim.practice_jpa.member.domain.Member;
 import com.dhkim.practice_jpa.member.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +16,8 @@ public class MemberService {
     @Autowired
     private MemberRepository memberRepository;
 
+    APIResponseMsg apiResMsg;
+
     public List<Member> selectAllMember(){
 
         List<Member> memberList = memberRepository.findAll();
@@ -27,22 +27,16 @@ public class MemberService {
         return memberList;
     }
 
-    public Member selectMemberByMemberNo(Long memberNo){
+    public Optional<Member> selectMemberByMemberNo(Long memberNo){
 
-        Member member = memberRepository.getById(memberNo);
+        Optional<Member> member = Optional.ofNullable(memberRepository.findByMemberNo(memberNo).orElse(null));
 
         System.out.println("검색 회원 : " + member);
 
         return member;
     }
 
-    public void deleteMember(Long memberNo){
-        memberRepository.deleteById(memberNo);
-    }
-
     public APIResponseMsg insertMember(Member member){
-
-        APIResponseMsg apiResMsg;
 
         try {
             memberRepository.save(member);
@@ -57,8 +51,31 @@ public class MemberService {
         return apiResMsg;
     }
 
-    public Member updateMember(Member member) {
+    public APIResponseMsg updateMember(Member member) {
 
-        return memberRepository.save(member);
+        try{
+            memberRepository.save(member);
+            apiResMsg = new APIResponseMsg(ErrorCode.SUCCESS);
+        } catch (Exception e){
+            apiResMsg = new APIResponseMsg(ErrorCode.MODIFY_MEMBER_ERR);
+        }
+
+        System.out.println("API 응답값 : " + apiResMsg);
+
+        return apiResMsg;
+    }
+
+    public APIResponseMsg deleteMember(Long memberNo){
+
+        try{
+            memberRepository.deleteById(memberNo);
+            apiResMsg = new APIResponseMsg(ErrorCode.SUCCESS);
+        }catch (Exception e){
+            apiResMsg = new APIResponseMsg(ErrorCode.REMOVE_MEMBER_ERR);
+        }
+
+        System.out.println("API 응답값 : " + apiResMsg);
+
+        return apiResMsg;
     }
 }

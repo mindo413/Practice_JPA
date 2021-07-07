@@ -1,5 +1,6 @@
 package com.dhkim.practice_jpa.member.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -27,14 +28,10 @@ public class Member {
     @ApiModelProperty(value = "회원 명")
     @Column(name="memberName")
     private String memberName;
+
     @ApiModelProperty(value = "등록 일자")
     @CreationTimestamp
     @Column(name="regDate")
     private Timestamp regDate;
-
-    @ApiModelProperty(value = "수정 일자")
-    @UpdateTimestamp
-    @Column(name="updDate")
-    private Timestamp updDate;
 
 }

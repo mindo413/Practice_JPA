@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/member")
@@ -20,6 +21,9 @@ public class MemberController {
 
     @Autowired
     private MemberService memberService;
+
+    ResponseEntity<APIResponseMsg> response;
+    APIResponseMsg apiResponseMsg;
     
     @GetMapping("/selectAll")
     @ApiOperation(value = "전체 회원 조회", notes = "전체 회원 목록을 조회하는 API.")
@@ -29,7 +33,7 @@ public class MemberController {
 
     @GetMapping("/selectByMemberNo/{memberNo}")
     @ApiOperation(value = "회원 조회", notes = "회원 번호로 회원 목록을 조회하는 API.\n" + "Member Entity Class의 memberNo값으로 데이터를 가져온다.")
-    public Member getMemberByMemberNo(@ApiParam(value="회원번호", required=true) @PathVariable("memberNo") Long memberNo){
+    public Optional<Member> getMemberByMemberNo(@ApiParam(value="회원번호", required=true) @PathVariable("memberNo") long memberNo){
         return memberService.selectMemberByMemberNo(memberNo);
     }
 
@@ -37,38 +41,41 @@ public class MemberController {
     @ApiOperation(value = "회원 등록", notes = "회원 정보를 저장하는 API.\n" + "Member Entity Class에 데이터를 저장한다.")
     public ResponseEntity<APIResponseMsg> addMember(@RequestBody Member member) {
 
-        APIResponseMsg apiResponseMsg = memberService.insertMember(member);
-        ResponseEntity<APIResponseMsg> response;
+        apiResponseMsg = memberService.insertMember(member);
 
         if(apiResponseMsg.getRetVal().equals(0000)){
-            response = new ResponseEntity<>(memberService.insertMember(member), HttpStatus.OK);
-
-            return response;
+            response = new ResponseEntity<>(apiResponseMsg, HttpStatus.OK);
         } else {
-            response = new ResponseEntity<>(memberService.insertMember(member), HttpStatus.INTERNAL_SERVER_ERROR);
-
-            return response;
+            response = new ResponseEntity<>(apiResponseMsg, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
+        return response;
     }
 
     @PutMapping("/update")
     @ApiOperation(value="회원 수정", notes = "회원 정보를 수정하는 API.\n" + "Member Entity Class의 memberNo값으로 데이터를 수정한다.")
-    public ResponseEntity<Member> modifyMember(@RequestBody Member member){
+    public ResponseEntity<APIResponseMsg> modifyMember(@RequestBody Member member){
 
-        Member updMember = memberService.updateMember(member);
+        apiResponseMsg = memberService.updateMember(member);
 
-        System.out.println("수정된 회원 : " + updMember);
-
-        return null;
+        if(apiResponseMsg.getRetVal().equals(0000)){
+            response = new ResponseEntity<>(apiResponseMsg, HttpStatus.OK);
+        } else {
+            response = new ResponseEntity<>(apiResponseMsg, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return response;
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping("/delete/{memberNo}")
     @ApiOperation(value="회원 삭제", notes="회원 정보를 삭제하는 API.\n" + "Member Entity Class의 memberNo값으로 데이터를 삭제한다.")
-    public ResponseEntity<Member> removeMember(@RequestBody Long MemberNo){
+    public ResponseEntity<APIResponseMsg> removeMember(@ApiParam(value="회원번호", required=true) @PathVariable("memberNo") Long memberNo){
 
-        memberService.deleteMember(MemberNo);
+        apiResponseMsg = memberService.deleteMember(memberNo);
 
-        return null;
+        if(apiResponseMsg.getRetVal().equals(0000)){
+            response = new ResponseEntity<>(apiResponseMsg, HttpStatus.OK);
+        } else {
+            response = new ResponseEntity<>(apiResponseMsg, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return response;
     }
 }
