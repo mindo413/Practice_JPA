@@ -39,9 +39,9 @@ public class MemberController {
 
     @PostMapping("/insert")
     @ApiOperation(value = "회원 등록", notes = "회원 정보를 저장하는 API.\n" + "Member Entity Class에 데이터를 저장한다.")
-    public ResponseEntity<APIResponseMsg> addMember(@RequestBody Member member) {
+    public ResponseEntity<APIResponseMsg> addMember(@ApiParam(value="회원아이디", required = true) @RequestParam String memberId, @ApiParam(value="회원이름", required = true) @RequestParam String memberName) {
 
-        apiResponseMsg = memberService.insertMember(member);
+        apiResponseMsg = memberService.insertMember(memberId, memberName);
 
         if(apiResponseMsg.getRetVal().equals(0000)){
             response = new ResponseEntity<>(apiResponseMsg, HttpStatus.OK);
